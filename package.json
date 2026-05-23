@@ -1,0 +1,29 @@
+{
+  "name": "sdet-playbook",
+  "version": "0.1.0",
+  "description": "Production-grade Playwright + TypeScript reference framework.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test tests/ui",
+    "test:api": "playwright test tests/api",
+    "test:a11y": "playwright test tests/accessibility",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:debug": "playwright test --debug",
+    "report": "playwright show-report",
+    "codegen": "playwright codegen",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^22.0.0",
+    "dotenv": "^16.4.0",
+    "typescript": "^5.6.0",
+    "zod": "^3.23.0"
+  },
+  "license": "MIT",
+  "author": "Peter Souza <peterleite.dev@gmail.com>",
+  "repository": "https://github.com/PeterTechDev/sdet-playbook"
+}
