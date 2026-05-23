@@ -38,7 +38,7 @@ jobs:
           API_URL: ${{ vars.API_URL }}
           TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-        run: npx playwright test --shard=${{ matrix.shard }}/${{ matrix.total }} --reporter=blob
+        run: npx playwright test --project=chromium --shard=${{ matrix.shard }}/${{ matrix.total }} --reporter=blob
 
       - name: Upload blob report
         if: always()
