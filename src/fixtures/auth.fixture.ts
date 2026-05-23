@@ -5,11 +5,17 @@ import path from 'node:path';
 import fs from 'node:fs';
 
 const AUTH_DIR = path.resolve('playwright/.auth');
-const STORAGE_FILE = path.join(AUTH_DIR, 'user.json');
 
+/**
+ * Provides an `authedPage` per test. Auth runs once per worker and the storage
+ * state is cached on disk — keyed by workerIndex so parallel workers do not
+ * race on the same file or share invalidated sessions on shared demo backends.
+ */
 export const test = base.extend<{ authedPage: Page }>({
-  authedPage: async ({ browser }, use) => {
-    if (!fs.existsSync(STORAGE_FILE)) {
+  authedPage: async ({ browser }, use, testInfo) => {
+    const storageFile = path.join(AUTH_DIR, `user-${testInfo.workerIndex}.json`);
+
+    if (!fs.existsSync(storageFile)) {
       fs.mkdirSync(AUTH_DIR, { recursive: true });
       const ctx = await browser.newContext();
       const page = await ctx.newPage();
@@ -17,13 +23,13 @@ export const test = base.extend<{ authedPage: Page }>({
 
       await login.goto();
       await login.signIn(env.TEST_USER_EMAIL, env.TEST_USER_PASSWORD);
-      await expect(page).toHaveURL(/dashboard|account/i);
+      await expect(page).toHaveURL(/\/account/);
 
-      await ctx.storageState({ path: STORAGE_FILE });
+      await ctx.storageState({ path: storageFile });
       await ctx.close();
     }
 
-    const ctx = await browser.newContext({ storageState: STORAGE_FILE });
+    const ctx = await browser.newContext({ storageState: storageFile });
     const page = await ctx.newPage();
     await use(page);
     await ctx.close();
