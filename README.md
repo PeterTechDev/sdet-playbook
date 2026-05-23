@@ -62,6 +62,14 @@ sdet-playbook/
 └─ package.json
 ```
 
+## CI scope (honest note)
+
+The repo tests against [practicesoftwaretesting.com](https://practicesoftwaretesting.com), a public demo site shared with the rest of the planet. A single test user (`customer@practicesoftwaretesting.com`) means concurrent CI workers invalidate each other's sessions during parallel UI authed tests.
+
+To keep CI deterministic, authed UI tests are tagged `@shared-demo` and excluded from the CI run via `--grep-invert`. They pass locally (`npm test` runs everything). In a real project, fixture users per worker against a dedicated staging environment would resolve this — see roadmap.
+
+CI runs: API tests, accessibility audits, and the unauthenticated login spec (valid + invalid creds).
+
 ## CI: 4-way sharded run
 
 `playwright.yml` runs four parallel jobs, each executing one shard, then merges reports:
@@ -155,7 +163,8 @@ npx playwright test --debug                  # inspector
 - [x] Auth fixture
 - [ ] Visual regression via Playwright snapshots
 - [ ] Contract tests (Pact) for microservices
-- [ ] Docker compose target environment
+- [ ] Docker compose target environment with isolated test users (kills the shared-demo limitation)
+- [ ] Fixture user pool — one user per worker, leased + released
 - [ ] LLM-assisted test data generator (uses [playwright-ai-test-generator](https://github.com/PeterTechDev/playwright-ai-test-generator))
 
 ## License

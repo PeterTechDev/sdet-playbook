@@ -38,7 +38,12 @@ jobs:
           API_URL: ${{ vars.API_URL }}
           TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-        run: npx playwright test --project=chromium --shard=${{ matrix.shard }}/${{ matrix.total }} --reporter=blob
+        # Skip @shared-demo tests in CI: practicesoftwaretesting.com is a shared
+        # backend that invalidates concurrent sessions for the same test user,
+        # making parallel authed UI tests flaky. In a real project, fixture users
+        # per worker on a dedicated staging env eliminate this. Run locally with
+        # `npx playwright test` to exercise the full suite.
+        run: npx playwright test --project=chromium --shard=${{ matrix.shard }}/${{ matrix.total }} --reporter=blob --grep-invert "@shared-demo"
 
       - name: Upload blob report
         if: always()
